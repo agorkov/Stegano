@@ -71,21 +71,35 @@ end;
 
 procedure TFMain.BCheckClick(Sender: TObject);
 var
-  str1, str2: AnsiString;
+  MSGOrientation, MsgSecretSheet: AnsiString;
 begin
-  USteganoExcel.ReadMSGFromWorkbookAngle(str1, LEExcelWorkbookName.Text);
-  USteganoExcel.ReadMSGFromWorkbookSecretSheet(str2, LEExcelWorkbookName.Text);
-  if str1 <> str2 then
-    ShowMessage('Нарушена целостность подписи. Настоящее сообщение: ' +
-      string(str1));
-  MMSG.Text := str1;
+  USteganoExcel.ReadMSGFromWorkbookAngle(
+    MSGOrientation,
+    LEExcelWorkbookName.Text);
+  USteganoExcel.ReadMSGFromWorkbookSecretSheet(
+    MsgSecretSheet,
+    LEExcelWorkbookName.Text);
+  if MSGOrientation <> MsgSecretSheet then
+  begin
+    ShowMessage('Обнаружена попытка изменить сообщение');
+    MMSG.Lines.Clear;
+    MMSG.Lines.Add('Оригинальное сообщение: ' + MSGOrientation);
+    MMSG.Lines.Add('Изменённое сообщение: ' + MsgSecretSheet);
+  end
+  else
+  begin
+    MMSG.Lines.Clear;
+    MMSG.Lines.Add(MSGOrientation);
+  end;
 end;
 
 procedure TFMain.BReadAngleClick(Sender: TObject);
 var
   str: AnsiString;
 begin
-  USteganoExcel.ReadMSGFromWorkbookAngle(str, LEExcelWorkbookName.Text);
+  USteganoExcel.ReadMSGFromWorkbookAngle(
+    str,
+    LEExcelWorkbookName.Text);
   MMSG.Text := string(str);
 end;
 
@@ -94,7 +108,9 @@ var
   str: AnsiString;
 begin
   USteganoExcel.SecretSheetName := LE_SecretSheet.Text;
-  USteganoExcel.ReadMSGFromWorkbookSecretSheet(str, LEExcelWorkbookName.Text);
+  USteganoExcel.ReadMSGFromWorkbookSecretSheet(
+    str,
+    LEExcelWorkbookName.Text);
   MMSG.Text := string(str);
 end;
 
@@ -115,14 +131,16 @@ end;
 
 procedure TFMain.BWriteAngleClick(Sender: TObject);
 begin
-  USteganoExcel.WriteMSGToWorkbookAngle(AnsiString(MMSG.Text),
+  USteganoExcel.WriteMSGToWorkbookAngle(
+    AnsiString(MMSG.Text),
     LEExcelWorkbookName.Text);
 end;
 
 procedure TFMain.BWriteSecretSheetClick(Sender: TObject);
 begin
   USteganoExcel.SecretSheetName := LE_SecretSheet.Text;
-  USteganoExcel.WriteMSGToWorkbookSecretSheet(AnsiString(MMSG.Text),
+  USteganoExcel.WriteMSGToWorkbookSecretSheet(
+    AnsiString(MMSG.Text),
     LEExcelWorkbookName.Text);
 end;
 

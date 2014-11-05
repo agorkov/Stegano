@@ -47,10 +47,8 @@ object FMain: TFMain
     ActivePage = TSExcel
     Align = alClient
     TabOrder = 0
-    ExplicitHeight = 182
     object TSExcel: TTabSheet
       Caption = 'Excel'
-      ExplicitHeight = 154
       object LEExcelWorkbookName: TLabeledEdit
         Left = 3
         Top = 24
@@ -146,7 +144,6 @@ object FMain: TFMain
     Height = 210
     Align = alLeft
     TabOrder = 1
-    ExplicitHeight = 182
     object MMSG: TMemo
       Left = 1
       Top = 1
@@ -157,7 +154,6 @@ object FMain: TFMain
         #1042#1074#1077#1076#1080#1090#1077' '#1089#1086#1086#1073#1097#1077#1085#1080#1077)
       ScrollBars = ssVertical
       TabOrder = 0
-      ExplicitHeight = 180
     end
   end
   object OPD: TOpenDialog
