@@ -1,7 +1,7 @@
 program PStegano;
 
 uses
-  Vcl.Forms,
+  Forms,
   UFMain in 'UFMain.pas' {FMain},
   USteganoExcel in '..\..\SteganoSharedUnits\src\USteganoExcel.pas';
 

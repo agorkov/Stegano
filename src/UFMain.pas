@@ -3,32 +3,33 @@ unit UFMain;
 interface
 
 uses
-  Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants,
-  System.Classes, Vcl.Graphics,
-  Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.ComCtrls, Vcl.StdCtrls,
-  Vcl.ExtCtrls;
+  Windows, Messages, SysUtils, Variants,
+  Classes, Graphics,
+  Controls, Forms, Dialogs, ComCtrls, StdCtrls,
+  ExtCtrls;
 
 type
   TFMain = class(TForm)
-    PCSteganoContainer: TPageControl;
-    TSExcel: TTabSheet;
-    MMSG: TMemo;
-    PMSG: TPanel;
-    OPD: TOpenDialog;
-    LEExcelWorkbookName: TLabeledEdit;
-    BSelectExcelBook: TButton;
-    BWriteAngle: TButton;
-    BReadAngle: TButton;
-    BWriteSecretSheet: TButton;
-    BReadSecretSheet: TButton;
-    LE_SecretSheet: TLabeledEdit;
-    BCheck: TButton;
-    procedure BSelectExcelBookClick(Sender: TObject);
-    procedure BWriteAngleClick(Sender: TObject);
-    procedure BReadAngleClick(Sender: TObject);
-    procedure BWriteSecretSheetClick(Sender: TObject);
-    procedure BReadSecretSheetClick(Sender: TObject);
-    procedure BCheckClick(Sender: TObject);
+    PCSteganoContainer : TPageControl;
+    TSExcel : TTabSheet;
+    MMSG : TMemo;
+    PMSG : TPanel;
+    OPD : TOpenDialog;
+    LEExcelWorkbookName : TLabeledEdit;
+    BSelectExcelBook : TButton;
+    BWriteAngle : TButton;
+    BReadAngle : TButton;
+    BWriteSecretSheet : TButton;
+    BReadSecretSheet : TButton;
+    LE_SecretSheet : TLabeledEdit;
+    BCheck : TButton;
+    procedure BSelectExcelBookClick(Sender : TObject);
+    procedure BWriteAngleClick(Sender : TObject);
+    procedure BReadAngleClick(Sender : TObject);
+    procedure BWriteSecretSheetClick(Sender : TObject);
+    procedure BReadSecretSheetClick(Sender : TObject);
+    procedure BCheckClick(Sender : TObject);
+    procedure FormActivate(Sender : TObject);
   private
     { Private declarations }
   public
@@ -36,7 +37,7 @@ type
   end;
 
 var
-  FMain: TFMain;
+  FMain : TFMain;
 
 implementation
 
@@ -69,16 +70,13 @@ begin
   end;
 end;
 
-procedure TFMain.BCheckClick(Sender: TObject);
+procedure TFMain.BCheckClick(Sender : TObject);
 var
-  MSGOrientation, MsgSecretSheet: AnsiString;
+  MSGOrientation, MsgSecretSheet : AnsiString;
 begin
-  USteganoExcel.ReadMSGFromWorkbookAngle(
-    MSGOrientation,
-    LEExcelWorkbookName.Text);
-  USteganoExcel.ReadMSGFromWorkbookSecretSheet(
-    MsgSecretSheet,
-    LEExcelWorkbookName.Text);
+  MMSG.Lines.Clear;
+  USteganoExcel.ReadMSGFromWorkbookAngle(MSGOrientation, LEExcelWorkbookName.Text);
+  USteganoExcel.ReadMSGFromWorkbookSecretSheet(MsgSecretSheet, LEExcelWorkbookName.Text);
   if MSGOrientation <> MsgSecretSheet then
   begin
     ShowMessage('ќбнаружена попытка изменить сообщение');
@@ -93,28 +91,26 @@ begin
   end;
 end;
 
-procedure TFMain.BReadAngleClick(Sender: TObject);
+procedure TFMain.BReadAngleClick(Sender : TObject);
 var
-  str: AnsiString;
+  str : AnsiString;
 begin
-  USteganoExcel.ReadMSGFromWorkbookAngle(
-    str,
-    LEExcelWorkbookName.Text);
-  MMSG.Text := string(str);
+  USteganoExcel.ReadMSGFromWorkbookAngle(str, LEExcelWorkbookName.Text);
+  MMSG.Lines.Add('—читано из углов в ' + datetimetostr(Now) + ':');
+  MMSG.Text := MMSG.Text + string(str);
 end;
 
-procedure TFMain.BReadSecretSheetClick(Sender: TObject);
+procedure TFMain.BReadSecretSheetClick(Sender : TObject);
 var
-  str: AnsiString;
+  str : AnsiString;
 begin
   USteganoExcel.SecretSheetName := LE_SecretSheet.Text;
-  USteganoExcel.ReadMSGFromWorkbookSecretSheet(
-    str,
-    LEExcelWorkbookName.Text);
-  MMSG.Text := string(str);
+  USteganoExcel.ReadMSGFromWorkbookSecretSheet(str, LEExcelWorkbookName.Text);
+  MMSG.Lines.Add('—читано из скрытого листа в ' + datetimetostr(Now) + ':');
+  MMSG.Text := MMSG.Text + string(str);
 end;
 
-procedure TFMain.BSelectExcelBookClick(Sender: TObject);
+procedure TFMain.BSelectExcelBookClick(Sender : TObject);
 begin
   OPD.Filter := 'Excel Workbook|*.xls; *.xlsx';
   if OPD.Execute then
@@ -129,19 +125,27 @@ begin
   end;
 end;
 
-procedure TFMain.BWriteAngleClick(Sender: TObject);
+procedure TFMain.BWriteAngleClick(Sender : TObject);
 begin
-  USteganoExcel.WriteMSGToWorkbookAngle(
-    AnsiString(MMSG.Text),
-    LEExcelWorkbookName.Text);
+  USteganoExcel.WriteMSGToWorkbookAngle(AnsiString(MMSG.Text), LEExcelWorkbookName.Text);
 end;
 
-procedure TFMain.BWriteSecretSheetClick(Sender: TObject);
+procedure TFMain.BWriteSecretSheetClick(Sender : TObject);
 begin
   USteganoExcel.SecretSheetName := LE_SecretSheet.Text;
-  USteganoExcel.WriteMSGToWorkbookSecretSheet(
-    AnsiString(MMSG.Text),
-    LEExcelWorkbookName.Text);
+  USteganoExcel.WriteMSGToWorkbookSecretSheet(AnsiString(MMSG.Text), LEExcelWorkbookName.Text);
+end;
+
+procedure TFMain.FormActivate(Sender : TObject);
+begin
+  if paramcount() = 1 then
+  begin
+    LEExcelWorkbookName.Text := ParamStr(1);
+    MMSG.Lines.Clear;
+    BReadAngleClick(nil);
+    BReadSecretSheetClick(nil);
+    SetExcelControlsEnabled;
+  end;
 end;
 
 end.

@@ -37,6 +37,7 @@ object FMain: TFMain
     000000000000000000000000000000000000000000000000000000000000}
   OldCreateOrder = False
   Position = poScreenCenter
+  OnActivate = FormActivate
   PixelsPerInch = 96
   TextHeight = 13
   object PCSteganoContainer: TPageControl
